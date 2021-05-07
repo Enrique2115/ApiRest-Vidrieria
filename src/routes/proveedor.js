@@ -31,21 +31,20 @@ router.get('/proveedor/:id', (req, res) => {
 });
 
 router.post('/addProveedor', (req, res) => {
-    const { id, razon, direccion, telef, email, ciudad, estado } = req.body;
+    const { razon, direccion, telef, email, ciudad, estado } = req.body;
     const query = `
-        SET @id = ?;
         SET @razon = ?;
         SET @direccion = ?;
         SET @telef = ?;
         SET @email = ?;
         SET @ciudad = ?;
         SET @estado = ?;
-        CALL sp_proveedorAddOrUpdates(@id, @razon, @direccion, @telef, @email, @ciudad, @estado);
+        CALL sp_proveedorAdd( @razon, @direccion, @telef, @email, @ciudad, @estado);
     `;
 
-    db.query(query, [id, razon, direccion, telef, email, ciudad, estado], (err, rows, fields) => {
+    db.query(query, [razon, direccion, telef, email, ciudad, estado], (err, rows, fields) => {
         if (!err) {
-            res.json({status: 'Empleado Guardado'});
+            res.json({status: 'Proveedor Guardado'});
         } else {
             console.log(err);
         }
@@ -63,7 +62,7 @@ router.put('/updateProveedor/:id', (req, res) => {
         SET @email = ?;
         SET @ciudad = ?;
         SET @estado = ?;
-        CALL sp_proveedorAddOrUpdates(@id, @razon, @direccion, @telef, @email, @ciudad, @estado);
+        CALL sp_proveedorUpdate(@id, @razon, @direccion, @telef, @email, @ciudad, @estado);
     `;
 
 
