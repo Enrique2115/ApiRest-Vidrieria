@@ -5,7 +5,18 @@ const router = Router();
 const db = require('../settings/db');
 
 router.get('/producto', (req, res) => {
-    db.query('SELECT  * FROM PRODUCTO', (err, rows, fields) =>{
+    db.query('SELECT  * FROM PRODUCTO WHERE estado = 1', (err, rows, fields) =>{
+        if (!err) {
+            res.json(rows);
+        } else {
+            console.log(err);
+        }
+    });
+});
+
+router.get('/productoInactivo', (req, res) => {
+
+    db.query('SELECT * FROM producto WHERE estado = 0', (err, rows, fields) => {
         if (!err) {
             res.json(rows);
         } else {
@@ -15,15 +26,16 @@ router.get('/producto', (req, res) => {
 });
 
 router.post('/buscarProd', (req, res) => {
-    const { nombre } = req.body;
+    const { nombre, radio } = req.body;
     const query = `
         SET @nombre = ?;
-        CALL sp_buscarProducto(@nombre);
+        SET @radio = ?;
+        CALL sp_buscarProducto(@nombre, @radio);
     `;
 
-    db.query(query, [nombre], (err, rows, fields) => {
+    db.query(query, [nombre, radio], (err, rows, fields) => {
         if (!err) {
-            res.json(rows[1]);
+            res.json(rows[2]);
         } else {
             console.log(err);
             res.json({status: 'Id de producto no encontrado'});
