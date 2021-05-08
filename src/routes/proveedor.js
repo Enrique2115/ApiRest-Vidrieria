@@ -44,18 +44,19 @@ router.post('/buscarProveedor', (req, res) => {
 });
 
 router.post('/addProveedor', (req, res) => {
-    const { razon, direccion, telef, email, ciudad, estado } = req.body;
+    const { id, razon, direccion, telef, email, ciudad, estado } = req.body;
     const query = `
+        SET @id = ?;
         SET @razon = ?;
         SET @direccion = ?;
         SET @telef = ?;
         SET @email = ?;
         SET @ciudad = ?;
         SET @estado = ?;
-        CALL sp_proveedorAdd( @razon, @direccion, @telef, @email, @ciudad, @estado);
+        CALL sp_proveedorAdd(@id, @razon, @direccion, @telef, @email, @ciudad, @estado);
     `;
 
-    db.query(query, [razon, direccion, telef, email, ciudad, estado], (err, rows, fields) => {
+    db.query(query, [id, razon, direccion, telef, email, ciudad, estado], (err, rows, fields) => {
         if (!err) {
             res.json({status: 'Proveedor Guardado'});
         } else {
@@ -102,4 +103,30 @@ router.delete('/deleteProveedor/:id', (req, res) => {
 });
 
 
+router.put('/inhabilitarProveedor/:id', (req, res) => {
+    const { id } = req.params;
+    const query = `
+        SET @id = ?;
+        CALL sp_inhabilitarProveedor(@id);
+    `;
+
+    db.query(query, [id], (err, rows, fields) => {
+        if (!err) {
+            res.json(rows);                  
+        } else {
+            console.log(err);
+        }
+    });
+});
+
+router.get('/cantidadProveedores', (req, res) => {
+
+    db.query('SELECT COUNT(id_proveedor) + 1 cantidad FROM proveedor;', (err, rows, fields) => {
+        if (!err) {
+            res.json(rows[0]);
+        } else {
+            console.log(err);
+        }
+    });
+});
 module.exports = router;
