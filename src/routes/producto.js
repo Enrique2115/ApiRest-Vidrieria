@@ -123,5 +123,16 @@ router.put('/updateStock', (req, res) => {
 
 });
 
+router.get('/cantidadProductos', (req, res) => {
+
+    db.query('SELECT COUNT(id_producto) + 1 cantidad FROM producto;', (err, rows, fields) => {
+        if (!err) {
+            res.json(rows[0]);
+        } else {
+            console.log(err);
+        }
+    });
+});
+
 
 module.exports = router;
