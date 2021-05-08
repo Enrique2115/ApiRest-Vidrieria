@@ -5,7 +5,7 @@ const db = require('../settings/db');
 
 router.get('/proveedor', (req, res) => {
 
-    db.query('SELECT * FROM proveedor', (err, rows, fields) => {
+    db.query('SELECT * FROM proveedor WHERE estado = 1', (err, rows, fields) => {
         if (!err) {
             res.json(rows);
         } else {
@@ -14,15 +14,28 @@ router.get('/proveedor', (req, res) => {
     });
 });
 
-router.get('/proveedor/:id', (req, res) => {
-    const { id } = req.params;
-    db.query('SELECT * FROM proveedor WHERE id_proveedor = ?', [id], (err, rows, fields) => {
+router.get('/proveedorInactivo', (req, res) => {
+
+    db.query('SELECT * FROM proveedor WHERE estado = 0', (err, rows, fields) => {
         if (!err) {
-            if (rows[0] != null) {
-                res.json(rows[0]);
-            } else {
-                res.json({status: 'Id de proveedor no encontrado'});
-            }
+            res.json(rows);
+        } else {
+            console.log(err);
+        }
+    });
+});
+
+router.post('/buscarProveedor', (req, res) => {
+    const { criterio, radio } = req.body;
+    const query = `
+        SET @criterio = ?;
+        SET @radio = ?;
+        CALL sp_buscarProveedor(@criterio, @radio);
+    `;
+
+    db.query(query, [criterio, radio], (err, rows, fields) => {
+        if (!err) {
+            res.json(rows[2]);
         } else {
             console.log(err);
         }
