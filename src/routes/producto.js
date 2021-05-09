@@ -134,5 +134,21 @@ router.get('/cantidadProductos', (req, res) => {
     });
 });
 
+router.put('/inhabilitarProducto/:id', (req, res) => {
+    const { id } = req.params;
+    const query = `
+        SET @id = ?;
+        CALL sp_inhabilitarProducto(@id);
+    `;
+
+    db.query(query, [id], (err, rows, fields) => {
+        if (!err) {
+            res.json(rows);                  
+        } else {
+            console.log(err);
+        }
+    });
+});
+
 
 module.exports = router;
