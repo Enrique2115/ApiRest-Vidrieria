@@ -21,6 +21,7 @@ app.use(require('./routes/moneda'));
 app.use(require('./routes/comprobante'));
 app.use(require('./routes/cliente'));
 app.use(require('./routes/usuario'));
+app.use(require('./routes/categoria'));
 
     
 app.listen(port, () => console.log(`Servidor corriendo en el puerto  ${port}`))
